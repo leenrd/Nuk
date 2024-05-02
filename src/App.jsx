@@ -1,10 +1,11 @@
 import { MapContainer, TileLayer, Marker, Popup, Circle } from "react-leaflet";
 import { Icon } from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 function App() {
-  const [bombRadius, setBomb] = useState(null);
+  const [bombRadius, setBomb] = useState(0);
+  const [color, setColor] = useState("red");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
   const [loc, setLoc] = useState({ lat: 0, lng: 0 });
@@ -35,35 +36,40 @@ function App() {
     getLocation();
   }, [loc]);
 
-  const handleBomb = () => {
-    switch (bombRadius) {
+  const handleBomb = (input) => {
+    switch (input) {
       case "ab":
         setBomb(10000);
-        console.log(bombRadius);
+        setColor("red");
         break;
       case "tb":
         setBomb(100000);
+        setColor("green");
         break;
       case "nb":
         setBomb(5000);
+        setColor("blue");
         break;
       case "db":
         setBomb(1000);
+        setColor("purple");
         break;
       case "tnb":
         setBomb(10000);
+        setColor("cyan");
         break;
       case "snb":
         setBomb(100000);
+        setColor("yellow");
         break;
       case "erw":
         setBomb(10000);
+        setColor("orange");
         break;
       case "sb":
         setBomb(10000);
+        setColor("neon");
         break;
-      default:
-        setBomb(10000);
     }
   };
 
@@ -72,10 +78,7 @@ function App() {
     iconSize: [38, 38],
   });
 
-  const handleChange = (e) => {
-    setBomb(e.target.value);
-    console.log(e.target.value);
-  };
+  const inputBomb = useRef(null);
 
   return (
     <div className="my-12 flex items-center justify-center flex-col">
@@ -86,8 +89,9 @@ function App() {
         <div className="flex gap-3">
           <select
             name="select"
+            ref={inputBomb}
             className="min-w-[30rem] rounded-md border bg-slate-50 border-slate-200 py-2 px-6"
-            onChange={handleChange}
+            // onChange={handleChange}
           >
             <option value="ab">Atomic Bomb (A-Bomb)</option>
             <option value="tb">Thermonuclear Bomb (H-Bomb)</option>
@@ -101,7 +105,7 @@ function App() {
           <button
             type="submit"
             className="bg-black text-white font-bold rounded-md py-2 px-6"
-            onClick={handleBomb}
+            onClick={() => handleBomb(inputBomb.current.value)}
           >
             Nuke
           </button>
@@ -127,7 +131,7 @@ function App() {
             {!bombRadius ? null : (
               <Circle
                 center={loc}
-                pathOptions={{ color: "red" }}
+                pathOptions={{ color: color }}
                 radius={bombRadius}
               />
             )}
